@@ -1,7 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { trackConversion } from './analytics';
+import AnalyticsDashboard from './AnalyticsDashboard';
 
 const HightideMarinePage = () => {
+  const [showDashboard, setShowDashboard] = useState(() => new URLSearchParams(window.location.search).get('admin') === 'true');
+
+  // Check URL for ?admin=true on load
+
+  if (showDashboard) {
+    return <AnalyticsDashboard onBack={() => setShowDashboard(false)} />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
       {/* HTM-Nav-01: Header / Navbar */}
@@ -36,12 +45,13 @@ const HightideMarinePage = () => {
           <p className="text-xl lg:text-2xl font-light mb-10 max-w-2xl mx-auto text-slate-200 drop-shadow">
             Keeping your vessel seaworthy and in peak condition.
           </p>
-          <button 
-            onClick={() => trackConversion('free_estimate')}
-            className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-4 px-10 rounded text-lg shadow-xl transition duration-200 uppercase tracking-widest border-2 border-orange-500 hover:border-orange-400"
+          <a 
+            href="#estimate-form"
+            onClick={() => trackConversion('hero_estimate')}
+            className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-4 px-10 rounded text-lg shadow-xl transition duration-200 uppercase tracking-widest border-2 border-orange-500 hover:border-orange-400"
           >
             Get a Free Estimate
-          </button>
+          </a>
         </div>
       </section>
 
@@ -187,7 +197,7 @@ const HightideMarinePage = () => {
               </div>
             </div>
             <div className="md:w-2/3 p-10">
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); trackConversion("estimate_submitted"); alert("Estimate requested! We will be in touch shortly."); }}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-black uppercase text-slate-400 mb-1">Full Name</label>
@@ -276,9 +286,35 @@ const HightideMarinePage = () => {
           </div>
         </div>
         <div className="container mx-auto px-4 mt-12 pt-8 border-t border-blue-900/50 text-sm text-center opacity-70">
-          &copy; {new Date().getFullYear()} Hightide Marine. All rights reserved.
+          <div className="flex justify-center items-center gap-4">
+            <span>&copy; {new Date().getFullYear()} Hightide Marine. All rights reserved.</span>
+            <button 
+              onClick={() => setShowDashboard(true)}
+              className="text-slate-500 hover:text-teal-400 text-xs transition"
+            >
+              Analytics
+            </button>
+          </div>
         </div>
       </section>
+
+      {/* HTM-MobileCTA-01: Sticky Mobile CTA (CRO Element) */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-[100] flex p-3 gap-3">
+        <a 
+          href="tel:07990625026" 
+          onClick={() => trackConversion('mobile_sticky_call')}
+          className="flex-1 bg-blue-950 text-white font-black py-3 rounded text-center uppercase tracking-tighter text-sm flex items-center justify-center"
+        >
+          <span className="mr-2">📞</span> Call Now
+        </a>
+        <a 
+          href="#estimate-form" 
+          onClick={() => trackConversion('mobile_sticky_estimate')}
+          className="flex-1 bg-orange-500 text-white font-black py-3 rounded text-center uppercase tracking-tighter text-sm flex items-center justify-center"
+        >
+          <span className="mr-2">⚓</span> Free Estimate
+        </a>
+      </div>
     </div>
   );
 };
